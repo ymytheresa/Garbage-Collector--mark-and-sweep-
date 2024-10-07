@@ -3,6 +3,17 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+void *stack_pop(stack_t *stack) {
+  if (stack->count == 0){
+    return NULL;
+  }
+  stack->count--; //count is really the amount of count, so its +1 of the idx
+  void *obj = stack->data[stack->count];
+  stack->data[stack->count] = NULL; // set to NULL then the gc will know its not needed in the future
+  return obj;
+}
+
+
 void stack_push(stack_t *stack, void *obj) {
   if (stack->count == stack->capacity) {
     stack->capacity *= 2;
@@ -17,8 +28,6 @@ void stack_push(stack_t *stack, void *obj) {
   stack->count++;
   return;
 }
-
-// don't touch below this line
 
 stack_t *stack_new(size_t capacity) {
   stack_t *stack = malloc(sizeof(stack_t));
@@ -36,3 +45,30 @@ stack_t *stack_new(size_t capacity) {
 
   return stack;
 }
+
+
+//problematic implementation's resulting in multiple types into the stack
+
+void scary_double_push(stack_t *s) {
+  //push int 
+  stack_push(s, (void*)1337);
+  //push int pointer
+  int *intptr = (int*)malloc(sizeof(int));
+  *intptr = 1024;
+  stack_push(s, intptr);
+  return;
+}
+
+void stack_push_multiple_types(stack_t *s) {
+  float *fo = (float*)malloc(sizeof(float));
+  *fo = 3.14;
+  stack_push(s, fo);
+
+  
+  char *co = (char *)malloc(strlen("Sneklang is blazingly slow!") + 1);
+  strcpy(co, "Sneklang is blazingly slow!");
+  stack_push(s, co);
+
+  return;
+}
+
