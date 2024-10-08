@@ -1,39 +1,38 @@
-#include "bootlib.h"
+#include <stdlib.h>
+
 #include "munit.h"
-#include "snekstack.h"
+#include "snekobject.h"
 
-munit_case(RUN, create_stack_small, {
-  stack_t *s = stack_new(3);
-  assert_int(s->capacity, ==, 3, "Sets capacity to 3");
-  assert_int(s->count, ==, 0, "No elements in the stack yet");
-  assert_ptr_not_null(s->data, "Allocates the stack data");
+munit_case(RUN, test_str_copied, {
+  char *input = "Hello, World!";
+  snek_object_t *obj = new_snek_string(input);
 
-  free(s->data);
-  free(s);
+  assert_int(obj->kind, ==, STRING, "Must be a string!");
 
-  assert(boot_all_freed());
-});
+  // Should not have pointers be the same, otherwise we didn't copy the value.
+  assert_ptr_not_equal(
+      obj->data.v_string, input, "You need to copy the string."
+  );
 
-munit_case(SUBMIT, create_stack_large, {
-  stack_t *s = stack_new(100);
-  assert_int(s->capacity, ==, 100, "Sets capacity to 100");
-  assert_int(s->count, ==, 0, "No elements in the stack yet");
-  assert_ptr_not_null(s->data, "Allocates the stack data");
+  // But should have the same data!
+  //  This way the object can free it's own memory later.
+  assert_string_equal(
+      obj->data.v_string, input, "Should copy string correctly"
+  );
 
-  free(s->data);
-  free(s);
-
+  // Free the string, and then free the object.
+  free(obj->data.v_string);
+  free(obj);
   assert(boot_all_freed());
 });
 
 int main() {
   MunitTest tests[] = {
-    munit_test("/create_stack_small", create_stack_small),
-    munit_test("/create_stack_large", create_stack_large),
+    munit_test("/copies_value", test_str_copied),
     munit_null_test,
   };
 
-  MunitSuite suite = munit_suite("snekstack", tests);
+  MunitSuite suite = munit_suite("object-string", tests);
 
   return munit_suite_main(&suite, NULL, 0, NULL);
 }
