@@ -6,7 +6,7 @@ This project implements a simple virtual machine (VM) with a mark-and-sweep garb
 
 ## Garbage Collection Approach
 
-Our approach in this VM is inspired by the tricolor marking concepts used in languages like Golang, though in a more simplified form.
+Our approach in this VM is inspired by the tricolor marking concepts used in languages like Golang, though in a more simplified form. This implementation draws inspiration from the article: [Exploring the Inner Workings of Garbage Collection in Golang: Tricolor Mark and Sweep](https://medium.com/@souravchoudhary0306/exploring-the-inner-workings-of-garbage-collection-in-golang-tricolor-mark-and-sweep-e10eae164a12).
 
 ### Inspiration from Go's Tricolor GC
 
@@ -84,3 +84,4 @@ While Go's GC is concurrent and minimizes pause times, this implementation serve
 13. **Performance Considerations**: Understanding the trade-offs in garbage collection (like pause times vs. memory usage), which helps in optimizing Go applications.
 
 By implementing this simpler GC in C, we gain a foundational understanding that makes it easier to grasp the more advanced concepts in Go's garbage collector. This knowledge ultimately leads to more efficient Go programming practices and a deeper appreciation of Go's runtime behavior.
+
